@@ -1,64 +1,109 @@
-# 🤖 Robotic M3 Screw-Driving Cell (Engineering Concept & Feasibility Study)
+# 🤖 Robotic M3 Screw-Driving Cell
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Standards: ISO](https://img.shields.io/badge/Standards-ISO_10218--2_%7C_ISO%2FTS_15066-blue.svg)](#safety--standards)
-[![Robot: Techman TM5-900](https://img.shields.io/badge/Robot-Techman_TM5--900-orange.svg)](https://www.tm-robot.com/)
-[![ROI: 2.8 Years](https://img.shields.io/badge/ROI-2.8_Years-brightgreen.svg)](#economic-efficiency--roi)
-[![Location: St. Petersburg](https://img.shields.io/badge/Developed_for-Semargl_(St._Petersburg)-0284c7.svg)](#project-overview)
+### Engineering Concept & Feasibility Study
+
+![Status](https://img.shields.io/badge/Status-Engineering%20Concept-blue)
+![Robot](https://img.shields.io/badge/Robot-Techman%20TM5--900-orange)
+![Vision](https://img.shields.io/badge/Vision-2D%20Camera-purple)
+![Torque](https://img.shields.io/badge/Target%20Torque-2.0%20Nm-green)
+![ROI](https://img.shields.io/badge/ROI-2.8%20Years-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+> **Automated collaborative robotic cell for precision M3 screw driving on printed circuit boards (PCBs).**
 
 ---
 
 ## 📌 Project Overview
 
-This repository contains the engineering concept, technical-economic feasibility study (TEO), and control architecture for an automated collaborative robotic cell designed for **Semargl (Saint Petersburg, Russia)**. 
+This repository contains the engineering concept, technical-economic feasibility study (TEO), control architecture and software concept for an automated robotic cell designed for high-precision M3 screw driving on printed circuit boards.
 
-The cell is engineered to automate high-precision M3 screw driving on printed circuit boards (PCBs) using a **Techman TM5-900** cobot integrated with 2D vision, a DEPRAG electric spindle, and a SANCI automatic screw feeder.
+The system combines:
 
----
+- 🤖 **Techman TM5-900 collaborative robot**
+- 📷 **2D machine vision**
+- 🔩 **DEPRAG MINIMAT-E electric screwdriver**
+- 🪛 **SANCI CA-150 automatic screw feeder**
+- 🧠 **Central robot controller**
+- 📐 **Vision-based PCB position compensation**
+- 📊 **Cycle monitoring and quality control**
 
-## 📊 Key Performance Indicators & ROI Impact
-
-| Metric | Manual Process (Before) | Automated Cell (After) | Gain / Benefit |
-| :--- | :---: | :---: | :---: |
-| **Cycle Time (1 PCB / 4 Screws)** | 30.0 sec | 33.2 sec | Quality-focused cycle |
-| **Operator Engagement per Cycle** | 100% (30 sec) | **30% (10 sec)** | **+70% Operator Free Time** 🚀 |
-| **Defect Rate (Torque/Stripping)** | 3.0% | **0.5%** | **6x Quality Improvement** 🎯 |
-| **Cell-to-Operator Ratio** | 1 cell / operator | **2–3 cells / operator** | **Labor Efficiency Scaling** |
-| **Payback Period (ROI)** | — | — | **2.8 Years (CAPEX 2.57M ₽)** 💰 |
+The main objective is to reduce manual operator involvement while improving assembly consistency and screw-driving quality.
 
 ---
 
-## 🏗️ Cell Layout & Components
+# 🎯 Project Goals
 
-The cell is designed following a **shared workspace layout** (5.5 m² total footprint), ensuring safe co-existence and task separation between the human operator and the cobot.
+The robotic cell is designed to:
 
-![Cell Layout and Control Architecture](assets/portfolio_slide1.svg)
-
-### Hardware Specification:
-* **Collaborative Robot:** `Techman TM5-900` (900 mm reach, 4 kg payload, ±0.05 mm repeatability, built-in 2D camera).
-* **Electric Screw-Driving Spindle:** `DEPRAG MINIMAT-E` (2.0 Nm target torque, ±5% accuracy, DI/DO & AI/AO integration).
-* **Screw Feeding System:** `SANCI CA-150` vibratory bowl feeder with optical screw-presence sensing.
-* **Computer Vision (CV):** Integrated TM Vision camera for real-time PCB fixture position compensation ($\Delta X, \Delta Y, \Delta \theta$).
+- automate M3 screw insertion;
+- reduce manual operator involvement;
+- maintain consistent screw-driving quality;
+- detect PCB position deviations;
+- reduce torque-related defects;
+- improve production scalability;
+- provide a documented and reproducible control architecture.
 
 ---
 
-## ⚡ Control Architecture & I/O Interfaces
+# 📊 Key Performance Indicators
 
-The **Techman TM5-900** cobot controller acts as the central cell controller managing execution logic and sensor feedback.
+| Metric | Manual Process | Automated Cell | Result |
+|---|---:|---:|---|
+| Cycle Time | 30.0 sec | 33.2 sec | Quality-focused cycle |
+| Operator Engagement | 100% | 30% | Reduced involvement |
+| Defect Rate | 3.0% | 0.5% | Improved quality |
+| Cell / Operator | 1 : 1 | 2–3 : 1 | Higher scalability |
+| Target Torque | — | 2.0 Nm | Controlled fastening |
+| Estimated ROI | — | 2.8 years | CAPEX ≈ 2.57M ₽ |
+
+> **Note:** The values above represent the engineering concept / feasibility-study assumptions and should be validated against real production data before implementation.
+
+---
+
+# 🏭 Cell Architecture
+
+The proposed cell follows a shared workspace concept where the operator and robotic system perform separate tasks.
 
 ```mermaid
-graph TD
-    MES[Factory MES / Upper-Level System] <-->|Ethernet / TCP/IP| TM[Techman TM5-900 Controller]
-    
-    subgraph Cell Automation
-        TM <-->|DI/DO: Start/Stop/Status| DEPRAG[DEPRAG Spindle]
-        TM <-->|AI/AO: Torque Monitoring| DEPRAG
-        TM <-->|DI/DO: Request/Screw Ready| SANCI[SANCI Feeder]
-        TM <-->|TM Vision API| CAM[Built-in 2D Camera]
+flowchart TB
+
+    OP["👤 Operator"]
+
+    subgraph VISION["📷 VISION SYSTEM"]
+        CAM["2D Vision Camera"]
+        POS["PCB Position Detection"]
     end
-    
-    subgraph Safety Circuit
-        E_STOP[E-Stop Buttons] -->|Safety I/O| TM
-        BARRIER[Safety Doors / Barriers] -->|Safety I/O| TM
-        LIGHT[3-Color Signal Tower] <--|DO| TM
+
+    subgraph CONTROL["🧠 CONTROL SYSTEM"]
+        CTRL["Techman TM5-900 Controller"]
+        FSM["Process State Machine"]
     end
+
+    subgraph ROBOT["🤖 ROBOTIC SYSTEM"]
+        ARM["Techman TM5-900"]
+        SPINDLE["DEPRAG MINIMAT-E"]
+        FEEDER["SANCI CA-150"]
+    end
+
+    subgraph WORKPIECE["🔧 WORKPIECE"]
+        FIXTURE["PCB Fixture"]
+        PCB["Printed Circuit Board"]
+    end
+
+    OP --> FIXTURE
+    FIXTURE --> PCB
+
+    CAM --> POS
+    POS --> CTRL
+
+    CTRL --> FSM
+    FSM --> ARM
+    FSM --> FEEDER
+
+    ARM --> SPINDLE
+    FEEDER --> SPINDLE
+
+    SPINDLE --> PCB
+    PCB --> CAM
+
+    CTRL --> OP
